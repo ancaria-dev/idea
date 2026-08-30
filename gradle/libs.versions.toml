@@ -1,0 +1,19 @@
+[versions]
+# The compiler. What the emitted class files and metadata say is settled by
+# jvmTarget and languageVersion in build.gradle.kts, not by this number.
+kotlin = "2.4.10"
+intellij = "2.18.1"
+junit = "5.11.4"
+
+# The scaffolder, published by ancaria-dev/build. This plugin's New Project
+# dialog is a second face on it rather than a second copy of the templates.
+coderpack = "0.1.0"
+
+[plugins]
+kotlin = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
+intellij = { id = "org.jetbrains.intellij.platform", version.ref = "intellij" }
+
+[libraries]
+templates = { module = "dev.ancaria.coderpack:templates", version.ref = "coderpack" }
+junit-launcher = { module = "org.junit.platform:junit-platform-launcher", version = "1.11.4" }
+junit4 = { module = "junit:junit", version = "4.13.2" }
