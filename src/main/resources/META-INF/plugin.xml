@@ -1,0 +1,85 @@
+<!--
+  The plugin as the marketplace and the IDE read it.
+
+  Everything descriptive lives here rather than in build.gradle.kts. Only
+  <version> and <idea-version> are patched in by the build, because CI reads the
+  same numbers out of gradle.properties to decide whether a push is a release.
+-->
+<idea-plugin>
+    <id>dev.ancaria.idea</id>
+    <name>Sacred Mod Development</name>
+    <vendor url="https://ancaria.dev">ancaria.dev</vendor>
+
+    <description><![CDATA[
+        <p>Create and run <b>Sacred Gold</b> mods from the IDE.</p>
+
+        <p>The loader starts a JVM alongside the game and sends game events to
+        your mod. This plugin provides the project setup and development tools.</p>
+
+        <h3>What it does</h3>
+        <ul>
+          <li><b>New Project &rarr; Sacred Mod</b> creates a Gradle project from
+              a template. Choose Java, Kotlin, or Groovy for the mod and Kotlin
+              DSL or Groovy DSL for the build script.</li>
+          <li><b>Run Sacred</b> builds and installs the mod, prepares the
+              selected Sacred Mod Loader release, and starts it.</li>
+          <li><b>Gutter icons</b> identify the mod entrypoint and
+              <code>@Subscribe</code> event listeners.</li>
+          <li><b>Settings &rarr; Tools &rarr; Sacred Mod Development</b> stores
+              the game folder and Sacred Mod Loader release.</li>
+        </ul>
+
+        <p>The project wizard and <code>coderpack new</code> use the same
+        templates and produce the same project structure.</p>
+
+        <p>Requires an installed copy of Sacred Gold. The plugin doesn’t
+        redistribute any game files.</p>
+    ]]></description>
+
+    <depends>com.intellij.modules.platform</depends>
+    <depends>com.intellij.modules.java</depends>
+    <depends>com.intellij.gradle</depends>
+
+    <!--
+      A mod can be written in Kotlin or in Groovy, and the gutter icons should
+      work there too. The marker code is the same class in all three cases,
+      because it reads UAST rather than any one language's PSI; what needs the
+      language plugin is the registration, which is why these two are optional
+      files rather than two more <depends> lines that would refuse to install
+      the plugin in an IDE without them.
+    -->
+    <depends optional="true" config-file="sacred-kotlin.xml">org.jetbrains.kotlin</depends>
+    <depends optional="true" config-file="sacred-groovy.xml">org.intellij.groovy</depends>
+
+    <resource-bundle>messages.SacredBundle</resource-bundle>
+
+    <extensions defaultExtensionNs="com.intellij">
+        <newProjectWizard.generator
+            implementation="dev.ancaria.idea.wizard.SacredProjectWizard"/>
+
+        <applicationConfigurable
+            id="dev.ancaria.idea.settings"
+            parentId="tools"
+            bundle="messages.SacredBundle"
+            key="settings.title"
+            instance="dev.ancaria.idea.settings.SacredConfigurable"/>
+
+        <configurationType implementation="dev.ancaria.idea.run.SacredRunConfigurationType"/>
+
+        <!--
+          A project that is a Sacred mod and has no Run Sacred configuration
+          gets one. That covers a checkout somebody cloned rather than
+          generated, which is most of them after the first week.
+        -->
+        <postStartupActivity implementation="dev.ancaria.idea.run.SacredRunSetup"/>
+
+        <codeInsight.lineMarkerProvider
+            language="JAVA"
+            implementationClass="dev.ancaria.idea.markers.EntrypointMarker"/>
+        <codeInsight.lineMarkerProvider
+            language="JAVA"
+            implementationClass="dev.ancaria.idea.markers.EventMarker"/>
+
+        <notificationGroup id="Sacred Mod Development" displayType="BALLOON"/>
+    </extensions>
+</idea-plugin>
