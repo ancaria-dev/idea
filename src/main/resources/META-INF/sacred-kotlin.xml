@@ -1,0 +1,21 @@
+<!-- Loaded only when the Kotlin plugin is there. Same two classes as JAVA. -->
+<idea-plugin>
+    <extensions defaultExtensionNs="com.intellij">
+        <codeInsight.lineMarkerProvider
+            language="kotlin"
+            implementationClass="dev.ancaria.idea.markers.EntrypointMarker"/>
+        <codeInsight.lineMarkerProvider
+            language="kotlin"
+            implementationClass="dev.ancaria.idea.markers.EventMarker"/>
+    </extensions>
+
+    <!--
+      K2 only, and it costs nothing to say so: the markers read UAST, which the
+      Kotlin plugin implements on both engines, and no Analysis API is called
+      from here. A plugin that depends on the Kotlin plugin and declares
+      nothing is a compatibility warning on every marketplace upload.
+    -->
+    <extensions defaultExtensionNs="org.jetbrains.kotlin">
+        <supportsKotlinPluginMode supportsK1="true" supportsK2="true"/>
+    </extensions>
+</idea-plugin>
