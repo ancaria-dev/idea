@@ -1,0 +1,11 @@
+<!-- Loaded only when the Groovy plugin is there. Same two classes as JAVA. -->
+<idea-plugin>
+    <extensions defaultExtensionNs="com.intellij">
+        <codeInsight.lineMarkerProvider
+            language="Groovy"
+            implementationClass="dev.ancaria.idea.markers.EntrypointMarker"/>
+        <codeInsight.lineMarkerProvider
+            language="Groovy"
+            implementationClass="dev.ancaria.idea.markers.EventMarker"/>
+    </extensions>
+</idea-plugin>
