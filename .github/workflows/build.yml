@@ -1,0 +1,101 @@
+# Builds the plugin on every push, and ships it when its version changes.
+#
+# Two things ship, from the same gate: a GitHub release with the installable zip
+# on it, and an upload to the JetBrains Marketplace. Raising pluginVersion in
+# gradle.properties is what does both. A push that does not change it builds,
+# verifies, and publishes nothing.
+#
+# Secrets, all four only needed on master:
+#   PUBLISH_TOKEN          a marketplace token with rights to this plugin
+#   CERTIFICATE_CHAIN      the signing chain, PEM
+#   PRIVATE_KEY            the signing key, PEM
+#   PRIVATE_KEY_PASSWORD   its password
+# Without them the publish step fails; without signing configured the
+# marketplace refuses an upload from an account that has signed before.
+name: build
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          # The publish gate asks the remote whether this version's tag exists.
+          fetch-depth: 0
+
+      # The New Project dialog calls the scaffolder from ancaria-dev/build, and
+      # nothing is on Maven Central yet. Checked out somewhere this build's
+      # settings.gradle.kts will not find as a sibling, on purpose: CI then
+      # exercises the resolve-from-a-repository path, which is the one a
+      # contributor with a single checkout takes, rather than the composite
+      # build that only exists on a workspace machine.
+      - name: Check out the scaffolder
+        uses: actions/checkout@v7
+        with:
+          repository: ancaria-dev/build
+          path: scaffolder
+
+      - uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - uses: gradle/actions/setup-gradle@v5
+
+      - name: Publish the scaffolder to Maven Local
+        working-directory: scaffolder/gradle
+        run: ./gradlew :templates:publishToMavenLocal :verify:publishToMavenLocal --no-daemon
+
+      - name: Build
+        run: ./gradlew build --no-daemon
+
+      # The marketplace runs this check on upload. Running it here means finding
+      # out about an API that moved on a pull request rather than on a release.
+      - name: Verify against the IDEs this declares support for
+        run: ./gradlew verifyPlugin --no-daemon
+
+      - name: Version and whether it is new
+        id: gate
+        shell: bash
+        run: |
+          version=$(grep -E "^pluginVersion=" gradle.properties | cut -d= -f2)
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          if git ls-remote --exit-code --tags origin "refs/tags/v$version" >/dev/null 2>&1; then
+            echo "publish=false" >> "$GITHUB_OUTPUT"
+            echo "v$version is already published; nothing to do"
+          else
+            echo "publish=true" >> "$GITHUB_OUTPUT"
+            echo "v$version is new"
+          fi
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: sacred-idea-${{ steps.gate.outputs.version }}
+          path: build/distributions/*.zip
+
+      - name: Publish to the JetBrains Marketplace
+        if: steps.gate.outputs.publish == 'true' && github.ref == 'refs/heads/master'
+        run: ./gradlew publishPlugin --no-daemon
+        env:
+          PUBLISH_TOKEN: ${{ secrets.PUBLISH_TOKEN }}
+          CERTIFICATE_CHAIN: ${{ secrets.CERTIFICATE_CHAIN }}
+          PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
+          PRIVATE_KEY_PASSWORD: ${{ secrets.PRIVATE_KEY_PASSWORD }}
+
+      # Creates the tag, which is what the gate above reads next time. The zip
+      # is attached so somebody can install it from disk without waiting for the
+      # marketplace to finish reviewing an update.
+      - name: Release
+        if: steps.gate.outputs.publish == 'true' && github.ref == 'refs/heads/master'
+        uses: softprops/action-gh-release@v3
+        with:
+          tag_name: v${{ steps.gate.outputs.version }}
+          files: build/distributions/*.zip
