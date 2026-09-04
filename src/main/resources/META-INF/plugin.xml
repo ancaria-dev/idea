@@ -18,14 +18,14 @@
 
         <h3>What it does</h3>
         <ul>
-          <li><b>New Project &rarr; Sacred Mod</b> creates a Gradle project from
+          <li><b>New Project → Sacred Mod</b> creates a Gradle project from
               a template. Choose Java, Kotlin, or Groovy for the mod and Kotlin
               DSL or Groovy DSL for the build script.</li>
           <li><b>Run Sacred</b> builds and installs the mod, prepares the
               selected Sacred Mod Loader release, and starts it.</li>
           <li><b>Gutter icons</b> identify the mod entrypoint and
               <code>@Subscribe</code> event listeners.</li>
-          <li><b>Settings &rarr; Tools &rarr; Sacred Mod Development</b> stores
+          <li><b>Settings → Tools → Sacred Mod Development</b> stores
               the game folder and Sacred Mod Loader release.</li>
         </ul>
 
