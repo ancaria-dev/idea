@@ -1,6 +1,10 @@
 build/
+bin/
 .gradle/
 .kotlin/
+
+# IntelliJ Platform Gradle plugin's local artifact cache and sandbox test IDE.
+.intellijPlatform/
 
 .idea/
 *.iml
