@@ -13,7 +13,7 @@ object SacredIcons {
 
     /** The plugin itself: the New Project entry, the run configuration, balloons. */
     @JvmField
-    val Sacred = IconLoader.getIcon("/icons/sacred.svg", SacredIcons::class.java)
+    val Sacred = IconLoader.getIcon("/icons/sacred.png", SacredIcons::class.java)
 
     /** Beside the class the mod starts in. */
     @JvmField
