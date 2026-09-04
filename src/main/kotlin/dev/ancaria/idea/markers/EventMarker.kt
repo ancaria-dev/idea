@@ -46,7 +46,12 @@ class EventMarker : SacredMarker() {
             SacredBundle.message("marker.event.priority", event.name.orEmpty(), priority)
         }
 
-        return marker(anchor, SacredIcons.Event, tooltip) { event as? Navigatable }
+        // MONITOR reads the event after everyone else and cannot change it, so
+        // it gets the same mark in grey rather than the gold every other
+        // listener earns -- a glance at the gutter already says which kind it is.
+        val icon = if (priority == "MONITOR") SacredIcons.EventMonitor else SacredIcons.Event
+
+        return marker(anchor, icon, tooltip) { event as? Navigatable }
     }
 
     /**

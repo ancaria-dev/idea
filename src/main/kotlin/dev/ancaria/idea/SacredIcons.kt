@@ -3,11 +3,14 @@ package dev.ancaria.idea
 import com.intellij.openapi.util.IconLoader
 
 /**
- * Three marks, one family.
+ * Four marks, one family.
  *
  * The ring and the gold are the game's; what sits inside it says which of the
- * three this is. A gutter icon is 12x12 and the wizard's is 16x16, because the
- * platform draws each at its natural size and a scaled-up ring is a blurry one.
+ * three markers this is. `EventMonitor` is `Event` desaturated to grey rather
+ * than a fourth shape, because a `MONITOR` listener is the same kind of thing
+ * with a different contract: it must not mutate what it sees. A gutter icon is
+ * 12x12 and the wizard's is 16x16, because the platform draws each at its
+ * natural size and a scaled-up ring is a blurry one.
  */
 object SacredIcons {
 
@@ -22,4 +25,8 @@ object SacredIcons {
     /** Beside a method that listens to something the game did. */
     @JvmField
     val Event = IconLoader.getIcon("/icons/event.svg", SacredIcons::class.java)
+
+    /** Beside a `MONITOR` listener: same shape as [Event], read-only in grey. */
+    @JvmField
+    val EventMonitor = IconLoader.getIcon("/icons/event-monitor.svg", SacredIcons::class.java)
 }
