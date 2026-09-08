@@ -22,17 +22,3 @@ plugins {
 }
 
 rootProject.name = "sacred-idea"
-
-// The scaffolder, when its checkout happens to be beside this one.
-//
-// The dependency is written as a coordinate either way, `dev.ancaria.coderpack:
-// templates`, and this line decides where that resolves from: the sibling
-// build when it is there, and Maven otherwise. That is what makes a change to a
-// template visible in the New Project dialog without publishing anything in
-// between, and it is also why CI does not need this -- it checks out `build`
-// and runs publishToMavenLocal instead, which is the path a contributor with
-// one checkout takes.
-val scaffolder = file("../build/gradle")
-if (scaffolder.isDirectory) {
-    includeBuild(scaffolder)
-}
