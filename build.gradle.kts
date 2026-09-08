@@ -10,9 +10,9 @@ group = property("group") as String
 version = property("pluginVersion") as String
 
 repositories {
-    // The scaffolder comes from here when the sibling checkout is absent:
-    // `publishToMavenLocal` in a checkout of ancaria-dev/build puts it in the
-    // first one, and the first release puts it in the second.
+    // The scaffolder is a Maven Central artifact. mavenLocal() stays first so
+    // `publishToMavenLocal` in a checkout of ancaria-dev/build can override it
+    // to test an unreleased template change.
     mavenLocal()
     mavenCentral()
     intellijPlatform {
