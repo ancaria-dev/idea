@@ -31,18 +31,6 @@ jobs:
           # The publish gate asks the remote whether this version's tag exists.
           fetch-depth: 0
 
-      # The New Project dialog calls the scaffolder from ancaria-dev/build, and
-      # nothing is on Maven Central yet. Checked out somewhere this build's
-      # settings.gradle.kts will not find as a sibling, on purpose: CI then
-      # exercises the resolve-from-a-repository path, which is the one a
-      # contributor with a single checkout takes, rather than the composite
-      # build that only exists on a workspace machine.
-      - name: Check out the scaffolder
-        uses: actions/checkout@v7
-        with:
-          repository: ancaria-dev/build
-          path: scaffolder
-
       - uses: actions/setup-java@v6
         with:
           distribution: temurin
@@ -50,10 +38,9 @@ jobs:
 
       - uses: gradle/actions/setup-gradle@v5
 
-      - name: Publish the scaffolder to Maven Local
-        working-directory: scaffolder/gradle
-        run: ./gradlew :templates:publishToMavenLocal :verify:publishToMavenLocal --no-daemon
-
+      # The New Project dialog calls the scaffolder from ancaria-dev/build,
+      # published as dev.ancaria.coderpack:templates. It resolves from Maven
+      # Central like any other dependency in this build.
       - name: Build
         run: ./gradlew build --no-daemon
 
