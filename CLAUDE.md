@@ -187,16 +187,10 @@ test that compiles projects generated from the same templates.
 ## Relationship to `build`
 
 This repository resolves `dev.ancaria.coderpack:templates`, which is published
-by `build`. If `../build/gradle` exists, `settings.gradle.kts` includes it as a
-composite build. Otherwise Gradle resolves the dependency from Maven Local or
-Maven Central.
-
-CI deliberately tests the repository path. It checks out `build` where the
-composite lookup cannot find it, then runs:
-
-```
-./gradlew :templates:publishToMavenLocal :verify:publishToMavenLocal --no-daemon
-```
+by `build`, from Maven Central like any other dependency. Run
+`publishToMavenLocal` in a `build` checkout to test an unreleased template
+change; `mavenLocal()` is checked first in `build.gradle.kts`'s
+`repositories {}` block and overrides the released artifact when present.
 
 Everything else shared with another repository is named once in `Sacred.kt`.
 That includes API types, the launcher repository and asset, the installation
