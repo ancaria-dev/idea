@@ -202,6 +202,11 @@ task and property, mod and launcher paths, and accepted game executables.
 builds and verifies the plugin, then checks for `v<pluginVersion>`. A missing
 tag causes the same ZIP to be published to the JetBrains Marketplace and a
 GitHub release. An existing tag prevents both publication steps.
+`tools/version.ps1` prints `pluginVersion` with no argument, or raises it with
+`pwsh tools/version.ps1 0.99.1`. It leaves `CHANGELOG.md` and the
+`gradle/libs.versions.toml` `coderpack` entry alone on purpose: the former
+needs a new heading, not a renamed one, and the latter tracks `build`'s
+version, not this plugin's own.
 
 Publishing requires one secret, `PUBLISH_TOKEN`.
 
