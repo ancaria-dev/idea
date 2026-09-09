@@ -17,7 +17,7 @@ import kotlin.test.assertTrue
  * This is the seam that matters: everything above it is Swing and everything
  * below it is the scaffolder that `coderpack new` uses, so the question here is
  * whether the answers on the form arrive as the right eleven placeholders. The
- * project it produces is already known to build -- that is the end-to-end test
+ * project it produces is already known to build: that is the end-to-end test
  * in ancaria-dev/build, run against these same templates.
  */
 class ScaffoldingTest {

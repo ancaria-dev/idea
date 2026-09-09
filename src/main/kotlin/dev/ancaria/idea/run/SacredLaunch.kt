@@ -74,11 +74,11 @@ object SacredLaunch {
      *
      * Nothing when the project has no wrapper, which is a checkout somebody
      * imported rather than one this plugin wrote. Starting the game is still
-     * worth doing there; failing the run over a missing `gradlew` is not.
+     * worth doing there. Failing the run over a missing `gradlew` is not.
      *
      * The task is named bare rather than qualified, so a repository with one
      * mod at the root and one with a directory per mod both build everything
-     * they have -- which is the same thing SRML's own workflow does.
+     * they have, which is the same thing SRML's own workflow does.
      */
     fun build(project: Project, game: Path): GeneralCommandLine? {
         val base = project.basePath?.let(Path::of) ?: return null

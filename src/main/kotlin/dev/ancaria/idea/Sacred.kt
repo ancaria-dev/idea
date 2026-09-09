@@ -3,9 +3,9 @@ package dev.ancaria.idea
 /**
  * The names this plugin shares with the rest of the toolchain.
  *
- * Every one of them is a decision made in another repository -- the API a mod
+ * Every one of them is a decision made in another repository: the API a mod
  * implements, the file the loader is released as, the task the Gradle plugin
- * registers -- and the only thing that keeps the two ends together is that
+ * registers, and the only thing that keeps the two ends together is that
  * neither invents a second spelling. So they are here, once, rather than inline
  * at the four call sites that would each have to be found again when one of
  * them changes.
@@ -22,7 +22,7 @@ object Sacred {
 
     /**
      * The three names the launcher, the host and the agent all try, in order.
-     * The addresses belong to the first; the other two start and are told so.
+     * The addresses belong to the first. The other two start and are told so.
      */
     val EXECUTABLES = listOf("pureHD.exe", "Sacred.exe", "Game.exe")
 

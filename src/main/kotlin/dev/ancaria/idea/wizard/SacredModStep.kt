@@ -29,7 +29,7 @@ import java.nio.file.Path
  * somebody types in it, which is what `dependsOn` does by default.
  *
  * Two of these answers are the reason this dialog is not four fields. Language
- * is what the mod is written in and reaches the player as bytecode; Build script
+ * is what the mod is written in and reaches the player as bytecode. Build script
  * is what the project's own build is typed in and reaches nobody. They are
  * separate rows because they are separate questions, and the Groovy in one has
  * nothing to do with the Groovy in the other.
@@ -67,8 +67,8 @@ class SacredModStep(private val base: NewProjectWizardBaseStep) :
         // Not a `dependsOn`: the model and the selection have to change in that
         // order, and two independent listeners on the same property do not
         // promise one. A language a template has no entrypoint for is not a
-        // preference worth keeping either -- it is a project that cannot be
-        // written -- so the choice survives only when the new template has it.
+        // preference worth keeping either: it is a project that cannot be
+        // written, so the choice survives only when the new template has it.
         templateProperty.afterChange { template ->
             val offered = Catalog.languages(template.id)
             val kept = offered.firstOrNull { it.id == languageProperty.get().id } ?: offered.first()

@@ -18,7 +18,7 @@ import javax.swing.Icon
  *
  * The shape is the same one `Bus.register` looks for and the linter checks:
  * `@Subscribe`, one parameter, and that parameter an event type. A method with
- * the annotation and the wrong shape never fires, so it gets no icon -- which
+ * the annotation and the wrong shape never fires, so it gets no icon, which
  * is a quiet way of saying the thing the linter says loudly at build time.
  *
  * The event's name is in the tooltip and the icon navigates to it, because the
@@ -48,7 +48,7 @@ class EventMarker : SacredMarker() {
 
         // MONITOR reads the event after everyone else and cannot change it, so
         // it gets the same mark in grey rather than the gold every other
-        // listener earns -- a glance at the gutter already says which kind it is.
+        // listener earns, and a glance at the gutter already says which kind it is.
         val icon = if (priority == "MONITOR") SacredIcons.EventMonitor else SacredIcons.Event
 
         return marker(anchor, icon, tooltip) { event as? Navigatable }

@@ -19,10 +19,10 @@ import dev.ancaria.idea.SacredBundle
  * worth explaining. A build that fails is the thing a mod author needs to read;
  * a launcher that started is a window on their screen. So the run window shows
  * the build, and the game is started from the listener when the build came back
- * zero -- detached, because somebody alt-tabbing out of Sacred Gold should not
+ * zero, detached, because somebody alt-tabbing out of Sacred Gold should not
  * be looking at a Stop button that kills it.
  *
- * With nothing to build -- no wrapper in the project -- the console follows the
+ * With nothing to build (no wrapper in the project) the console follows the
  * loader instead, and Stop does what it says.
  */
 class SacredRunState(

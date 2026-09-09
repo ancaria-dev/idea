@@ -16,15 +16,15 @@ import org.jetbrains.plugins.gradle.settings.GradleSettings
  * Run Sacred configuration.
  *
  * Both are here rather than in the wizard because most projects are opened
- * rather than created -- a clone, a checkout on a second machine, a project
- * somebody started with `coderpack new` in a terminal -- and each of those
+ * rather than created: a clone, a checkout on a second machine, a project
+ * somebody started with `coderpack new` in a terminal, and each of those
  * should have the green arrow the moment it opens. A project the wizard just
  * wrote comes through here too, on the same path, which is one path to keep
  * working instead of two.
  *
  * Neither is done twice. The build is linked only when Gradle has nothing
  * linked at all, which is true of a project the wizard has just written and
- * false of one the IDE imported on open; the configuration is created only when
+ * false of one the IDE imported on open. The configuration is created only when
  * there is not one.
  */
 class SacredRunSetup : ProjectActivity {
@@ -37,7 +37,7 @@ class SacredRunSetup : ProjectActivity {
             LOG.info("linking the Gradle build at $base")
             // Deprecated in favour of a suspend function that does not exist in
             // the oldest IDE this plugin supports. The deprecation is a
-            // warning; the missing function would be a crash.
+            // warning. The missing function would be a crash.
             @Suppress("DEPRECATION")
             linkAndRefreshGradleProject(base, project)
         }

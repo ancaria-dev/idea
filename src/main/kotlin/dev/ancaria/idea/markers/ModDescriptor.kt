@@ -16,7 +16,7 @@ import com.intellij.psi.util.CachedValuesManager
  *
  * This is the metadata half of the entrypoint marker. The PSI half can only see
  * that a class implements `SacredMod`, which any number of classes in a project
- * may do; the descriptor is the one place that says which of them the loader
+ * may do. The descriptor is the one place that says which of them the loader
  * will actually instantiate. Neither answer alone is the question a reader has.
  *
  * Read with a regular expression rather than with the Kotlin or Groovy PSI,

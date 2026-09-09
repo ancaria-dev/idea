@@ -13,7 +13,7 @@ import javax.swing.JComponent
 /**
  * Two checkboxes and a way to the settings.
  *
- * Everything else this run needs -- the folder, the release -- lives in
+ * Everything else this run needs (the folder, the release) lives in
  * Settings and is shown here as a link rather than copied into a field, so
  * there is one place to change it and no chance of the two disagreeing.
  */

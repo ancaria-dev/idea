@@ -16,16 +16,16 @@ import javax.swing.Icon
  * written in.
  *
  * One implementation for Java, Kotlin and Groovy rather than three, because
- * everything these markers ask -- does this class implement that interface,
- * does this method carry that annotation, what is its one parameter -- is a
+ * everything these markers ask (does this class implement that interface,
+ * does this method carry that annotation, what is its one parameter) is a
  * question UAST answers the same way in all of them. The registrations differ
- * per language and live in `plugin.xml`; the code does not.
+ * per language and live in `plugin.xml`. The code does not.
  *
  * Two rules the platform enforces and this class keeps subclasses out of. A
  * line marker provider is called once per leaf token and must return a marker
  * anchored on a leaf, or the icon lands on the wrong line and the platform
  * logs about it. And a declaration has many leaves, so only the one UAST calls
- * the anchor -- the identifier -- may answer, or the same icon is drawn once
+ * the anchor (the identifier) may answer, or the same icon is drawn once
  * per token in the signature.
  */
 abstract class SacredMarker : LineMarkerProviderDescriptor() {

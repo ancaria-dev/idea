@@ -39,4 +39,4 @@ if ($new -eq $text) { throw "pluginVersion=$current not found in $propsPath" }
 Set-Content -Path $propsPath -Value $new -NoNewline
 
 Write-Host "$current -> $Version"
-Write-Host 'Add a new CHANGELOG.md heading by hand -- this script leaves release notes alone.'
+Write-Host 'Add a new CHANGELOG.md heading by hand. This script leaves release notes alone.'

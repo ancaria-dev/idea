@@ -25,7 +25,7 @@ data class LauncherRelease(
  * five times should cost one request, not five.
  *
  * Nothing here throws. A machine with no network, or an hour that ran out of
- * requests, gets an empty list -- and the dialog then offers whatever is
+ * requests, gets an empty list, and the dialog then offers whatever is
  * already in the cache, which is the honest answer rather than an error over a
  * list somebody may not need.
  */
@@ -80,7 +80,7 @@ object LauncherReleases {
             val tag = release["tag_name"]?.asString ?: return@mapNotNull null
             // A release with no executable attached is a release nobody can run.
             // The workflow in `launcher` attaches exactly one file, under this
-            // name; anything else is a tag somebody made by hand.
+            // name. Anything else is a tag somebody made by hand.
             val asset = release["assets"]?.asJsonArray
                 ?.map { it.asJsonObject }
                 ?.firstOrNull { it["name"]?.asString == Sacred.LAUNCHER_FILE }

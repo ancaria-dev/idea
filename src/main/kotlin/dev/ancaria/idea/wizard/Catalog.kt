@@ -25,7 +25,7 @@ data class Choice(val id: String, val label: String, val description: String) {
  * Finish button.
  *
  * The labels are capitalised here and nowhere else. A directory name is
- * `kotlin`; a dialog says Kotlin.
+ * `kotlin`. A dialog says Kotlin.
  */
 object Catalog {
 

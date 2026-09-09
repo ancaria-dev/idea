@@ -16,7 +16,7 @@ import dev.ancaria.idea.SacredBundle
  *
  * Linking the Gradle build is deliberately not here. It has to happen after the
  * project window is open, and the platform's way of waiting for that from
- * inside project creation is marked internal -- so instead the startup activity
+ * inside project creation is marked internal, so instead the startup activity
  * that gives a Sacred project its Run Sacred configuration links the build too.
  * It runs after the window opens by definition, it already asks the question
  * this would have to ask, and a project cloned from git rather than created

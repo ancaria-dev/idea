@@ -16,11 +16,11 @@ import javax.swing.Icon
  * The class the mod starts in.
  *
  * Two sources, and neither is enough alone. The PSI says a class implements
- * `SacredMod`, which several classes in a project may do; the descriptor in the
+ * `SacredMod`, which several classes in a project may do. The descriptor in the
  * build script says which one the loader will instantiate, and it names a
  * string that may not be a class at all. So the icon appears on any class the
  * loader could start, and the tooltip says which of the three situations this
- * one is in -- the declared entrypoint, a candidate the descriptor does not
+ * one is in: the declared entrypoint, a candidate the descriptor does not
  * name, or a mod project whose build script has not been read yet.
  *
  * That middle case is the one worth having. A class that implements `SacredMod`

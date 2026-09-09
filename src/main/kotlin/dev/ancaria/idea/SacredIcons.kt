@@ -5,7 +5,7 @@ import com.intellij.openapi.util.IconLoader
 /**
  * Four marks, one family.
  *
- * The ring and the gold are the game's; what sits inside it says which of the
+ * The ring and the gold are the game's. What sits inside it says which of the
  * three markers this is. `EventMonitor` is `Event` desaturated to grey rather
  * than a fourth shape, because a `MONITOR` listener is the same kind of thing
  * with a different contract: it must not mutate what it sees. A gutter icon is

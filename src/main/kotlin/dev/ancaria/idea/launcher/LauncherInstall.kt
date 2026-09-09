@@ -18,7 +18,7 @@ class LauncherProblem(message: String) : RuntimeException(message)
  * Getting the right Sacred Mod Loader into the game folder.
  *
  * Two steps that look like one. The release the settings name has to be in the
- * cache, which means downloading it the first time; and the executable in the
+ * cache, which means downloading it the first time, and the executable in the
  * game folder has to be that same file, which means comparing it and copying
  * when it is not. The second step is why the version in Settings does anything
  * at all: without it, changing the number would change a cache directory

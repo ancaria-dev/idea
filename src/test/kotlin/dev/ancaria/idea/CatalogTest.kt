@@ -12,8 +12,8 @@ import kotlin.test.assertTrue
  * The three combo boxes, against the scaffolder they are read out of.
  *
  * The thing worth asserting is not that the lists have particular entries in
- * them -- that is the scaffolder's business and it changes when somebody adds a
- * directory over there -- but that this plugin offers exactly what the
+ * them (that is the scaffolder's business and it changes when somebody adds a
+ * directory over there) but that this plugin offers exactly what the
  * scaffolder will accept. An entry in a dialog that fails after Finish is the
  * failure mode this whole arrangement exists to prevent.
  */

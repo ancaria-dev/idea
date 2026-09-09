@@ -34,8 +34,8 @@ dependencies {
         pluginVerifier()
         zipSigner()
         // No testFramework() here. The tests in this repository start no IDE
-        // and need no fixture -- they are the catalogue, the game folder lookup
-        // and the call into the scaffolder -- and the platform test framework
+        // and need no fixture (they are the catalogue, the game folder lookup
+        // and the call into the scaffolder) and the platform test framework
         // registers a JUnit session listener that has to be able to start one.
         // Adding it back means adding the fixture dependencies with it.
     }
@@ -65,7 +65,7 @@ kotlin {
 
         // Compiled by the current Kotlin, against the language and the standard
         // library the oldest supported IDE carries. The compiler version is
-        // this build's business; what a 2025.2 has to be able to load is not,
+        // this build's business. What a 2025.2 has to be able to load is not,
         // and an api version pinned here is what stops a call to a stdlib
         // function that shipped later from compiling quietly and failing on
         // somebody's machine.
