@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.100.1
+
+- **Kotlin projects from the wizard now use the Kotlin API.** The scaffolder
+  moved to 0.100.0, and its Kotlin templates depend on
+  `dev.ancaria.coderpack:api-kotlin`. A generated Kotlin mod extends the
+  `SacredMod` class from that module, gets its context as the receiver of
+  `Context.load()`, and registers listeners with `on<Hero> { }` instead of an
+  annotated method. Java and Groovy projects are unchanged, and `@Subscribe`
+  still works in Kotlin for anybody who prefers it. Nothing in the wizard
+  itself changed: the dialog reads its templates, languages and build DSLs
+  from the scaffolder, so it offers the new ones without knowing their names.
+
 ## 0.99.0
 
 The first release.
