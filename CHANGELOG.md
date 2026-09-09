@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.100.2
+
+- **A generated SRML repository keeps its own index.** The release workflow the
+  wizard writes now regenerates `sacred.mods.repository.json` and commits it,
+  so raising a mod version and pushing is the whole of publishing one. It
+  indexes a mod that is already released from the jar on that release, and a
+  version with no tag yet from the jar it is about to publish, so the checksum
+  it advertises always describes the file behind the download URL. That is the
+  one a launcher verifies before it installs anything. The old step compared
+  the committed index against a freshly built jar, which fails whenever the jar
+  is built on a different machine than the one that wrote the index.
+
 ## 0.100.1
 
 - **Kotlin projects from the wizard now use the Kotlin API.** The scaffolder
