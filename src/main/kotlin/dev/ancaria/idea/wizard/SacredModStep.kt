@@ -136,6 +136,13 @@ class SacredModStep(private val base: NewProjectWizardBaseStep) :
                 checkBox(SacredBundle.message("wizard.srml")).bindSelected(srmlProperty)
             }.rowComment(SacredBundle.message("wizard.srml.comment"))
 
+            // The three files by name, where somebody is deciding whether to
+            // have them. dependencies.json in particular explains itself to
+            // nobody once it is sitting in the project tree.
+            row {
+                comment(SacredBundle.message("wizard.srml.files"))
+            }.visibleIf(srmlProperty)
+
             row(SacredBundle.message("wizard.repository")) {
                 textField()
                     .bindText(repositoryProperty)
