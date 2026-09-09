@@ -7,7 +7,7 @@ junit = "5.11.4"
 
 # The scaffolder, published by ancaria-dev/build. This plugin's New Project
 # dialog is a second face on it rather than a second copy of the templates.
-coderpack = "0.99.0"
+coderpack = "0.100.0"
 
 [plugins]
 kotlin = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
