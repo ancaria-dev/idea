@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.101.0
+
+- **The event gutter icon follows API contract 2.** A listener says what it may
+  do with its return type now: `void` observes, and a returned `Mutation`
+  decides. The marker reads the parameter as it always did, and its fallback
+  for a project that has not synced yet no longer treats `EventMutation`,
+  `Decides`, `Fold` or a nested `Mutation` as an event. Whether a listener
+  returns the right mutation is the linter's answer, at build time, where it
+  can name the event and the type it wanted.
+
 ## 0.100.2
 
 - **A generated SRML repository keeps its own index.** The release workflow the
