@@ -40,10 +40,17 @@ object Sacred {
     const val SUBSCRIBE = "dev.ancaria.coderpack.api.Subscribe"
 
     /**
-     * Everything in here is an event except `Guard`, which is the one class in
-     * the package that does not extend `Event`. The linter draws the same line.
+     * Everything directly in here is an event except the three that are not.
+     * The linter draws the same line, and a nested type there is a `Mutation`
+     * or the shape the numeric ones share, never an event.
      */
     const val EVENT_PACKAGE = "dev.ancaria.coderpack.api.event"
+
+    val NOT_EVENTS: Set<String> = setOf(
+        "$EVENT_PACKAGE.EventMutation",
+        "$EVENT_PACKAGE.Decides",
+        "$EVENT_PACKAGE.Fold",
+    )
 
     const val EVENT_BASE = "$EVENT_PACKAGE.Event"
 

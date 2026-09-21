@@ -55,8 +55,8 @@ class EventMarker : SacredMarker() {
     }
 
     /**
-     * Everything under the event package except `Guard`, which is the one class
-     * in there that does not extend `Event`.
+     * Everything directly under the event package, bar the three classes in
+     * there that are not events and the nested types, which are mutations.
      *
      * The hierarchy is the real answer and the package is the fallback: before
      * the first Gradle sync the API is not on the classpath, `Event` does not
@@ -66,7 +66,11 @@ class EventMarker : SacredMarker() {
     private fun isEvent(klass: PsiClass): Boolean {
         if (InheritanceUtil.isInheritor(klass, Sacred.EVENT_BASE)) return true
         val qualified = klass.qualifiedName ?: return false
-        return qualified.startsWith("${Sacred.EVENT_PACKAGE}.") &&
-            qualified != "${Sacred.EVENT_PACKAGE}.Guard"
+        val prefix = "${Sacred.EVENT_PACKAGE}."
+        if (!qualified.startsWith(prefix)) return false
+        if (qualified in Sacred.NOT_EVENTS) return false
+        // Gold.Mutation reads as <package>.Gold.Mutation here, so anything with
+        // a dot left in its tail is nested and is not an event.
+        return '.' !in qualified.removePrefix(prefix)
     }
 }
