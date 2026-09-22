@@ -160,10 +160,10 @@ to the descriptor when available.
 `EventMarker` requires `@Subscribe`, exactly one parameter, and an event type.
 It checks inheritance from `dev.ancaria.coderpack.api.event.Event`, with the
 event package as a pre-sync fallback. That fallback excludes `EventMutation`,
-`Decides` and `Fold`, which live in the package without being events, and every
-nested type, which is a `Mutation` or the shape the numeric ones share. The
-linter in `build` draws the same line. The tooltip includes a nondefault
-priority. Clicking navigates to the event class.
+`Decides`, `Fold` and `Delivery`, which live in the package without being
+events, and every nested type, which is a `Mutation` or the shape the numeric
+ones share. The linter in `build` draws the same line. The tooltip includes a
+nondefault priority. Clicking navigates to the event class.
 
 The marker says nothing about the return type. `void` observes and a returned
 `Mutation` decides, and the check that a listener returns the right one is the
