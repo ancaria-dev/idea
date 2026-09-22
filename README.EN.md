@@ -92,9 +92,12 @@ plugin can find one.
 
 An event icon appears on a method with `@Subscribe`, exactly one parameter and a
 parameter type from the Sacred event hierarchy. Before the first Gradle sync,
-classes in the event package are also recognized, except for `Guard`. The
-tooltip names the event and any nondefault listener priority. Clicking the icon
-opens the event class.
+top-level classes in the event package are also recognized, except for
+`EventMutation`, `Decides`, `Fold` and `Delivery`. The tooltip names the event
+and any nondefault listener priority, and a `MONITOR` listener gets a grey
+icon. Clicking the icon opens the event class. The icon does not check the
+return type: `void` observes and the event's `Mutation` decides, and the
+linter checks that at build time.
 
 ### Settings | Tools | Sacred Mod Development
 
