@@ -55,7 +55,7 @@ class EventMarker : SacredMarker() {
     }
 
     /**
-     * Everything directly under the event package, bar the three classes in
+     * Everything directly under the event package, bar the four classes in
      * there that are not events and the nested types, which are mutations.
      *
      * The hierarchy is the real answer and the package is the fallback: before

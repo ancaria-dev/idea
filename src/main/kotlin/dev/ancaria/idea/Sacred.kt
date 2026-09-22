@@ -40,9 +40,9 @@ object Sacred {
     const val SUBSCRIBE = "dev.ancaria.coderpack.api.Subscribe"
 
     /**
-     * Everything directly in here is an event except the three that are not.
-     * The linter draws the same line, and a nested type there is a `Mutation`
-     * or the shape the numeric ones share, never an event.
+     * Everything directly in here is an event except the four that are not.
+     * `Delivery` only holds the delivery annotations. A nested type there is a
+     * `Mutation` or the shape the numeric ones share, never an event.
      */
     const val EVENT_PACKAGE = "dev.ancaria.coderpack.api.event"
 
@@ -50,6 +50,7 @@ object Sacred {
         "$EVENT_PACKAGE.EventMutation",
         "$EVENT_PACKAGE.Decides",
         "$EVENT_PACKAGE.Fold",
+        "$EVENT_PACKAGE.Delivery",
     )
 
     const val EVENT_BASE = "$EVENT_PACKAGE.Event"
