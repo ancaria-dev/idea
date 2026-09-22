@@ -13,8 +13,8 @@
 
 # Sacred Mod Development
 
-This IntelliJ IDEA plugin is published on the JetBrains Marketplace as **Sacred
-Mod Development**. It adds a New Project wizard, a run configuration, two gutter
+This IntelliJ IDEA plugin is published on the JetBrains Marketplace as
+[**Sacred Mod Development**](https://plugins.jetbrains.com/plugin/34165-sacred-mod-development). It adds a New Project wizard, a run configuration, two gutter
 icons and one settings page for Sacred Gold mod development.
 
 The plugin doesn’t define the mod format. Its wizard uses the same scaffolder as
@@ -120,7 +120,7 @@ The plugin does not delete older versions automatically.
 ## Install
 
 From the Marketplace, open **Settings | Plugins | Marketplace** and search for
-“Sacred Mod Development”.
+“Sacred Mod Development”, or open its [Marketplace page](https://plugins.jetbrains.com/plugin/34165-sacred-mod-development).
 
 To install from a file, download `sacred-idea-<version>.zip` from this
 repository’s releases or use the local

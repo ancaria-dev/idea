@@ -116,7 +116,7 @@ Java, Kotlin и Groovy через UAST.
 ## Установка
 
 Через Marketplace: **Settings | Plugins | Marketplace**, затем найдите
-**Sacred Mod Development**.
+**Sacred Mod Development** или откройте [страницу плагина](https://plugins.jetbrains.com/plugin/34165-sacred-mod-development).
 
 Из файла: скачайте `sacred-idea-<версия>.zip` из релиза этого репозитория или
 возьмите локальный файл
