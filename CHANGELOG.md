@@ -1,5 +1,19 @@
 # Changelog
 
+## 0.200.0
+
+- **Mod API 3.** `SacredMod` is an abstract class now, not an interface. A mod
+  extends it (`: SacredMod()` in Kotlin), overrides a parameterless `onLoad()`
+  and optionally `onUnload()`, and reaches everything through `getContext()`.
+  The entrypoint gutter icon follows: it marks any concrete class that extends
+  `SacredMod`, directly or through an abstract base of the mod's own, in Java,
+  Kotlin and Groovy, and its tooltip says "Extends SacredMod".
+- **The wizard writes API 3 projects.** The scaffolder moved to 0.200.0. Every
+  generated mod, Kotlin included, extends `dev.ancaria.coderpack.api.SacredMod`
+  and registers listeners through
+  `getContext().getRegistry().getEventRegistry()`. The Kotlin-only base class
+  from `api-kotlin` is gone, and so is `Context.load()`.
+
 ## 0.101.0
 
 - **The event gutter icon follows API contract 2.** A listener says what it may
