@@ -35,7 +35,12 @@ object Sacred {
     /** The property that task reads for the game folder. */
     const val SACRED_DIR_PROPERTY = "sacredDir"
 
-    const val MOD_INTERFACE = "dev.ancaria.coderpack.api.SacredMod"
+    /**
+     * The abstract class every mod extends, since API 3. It was an interface
+     * before, and Kotlin mods had a second base class in `api-kotlin`. Neither
+     * is true any more.
+     */
+    const val MOD_CLASS = "dev.ancaria.coderpack.api.SacredMod"
 
     const val SUBSCRIBE = "dev.ancaria.coderpack.api.Subscribe"
 

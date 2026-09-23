@@ -15,7 +15,7 @@ import com.intellij.psi.util.CachedValuesManager
  * What the `sacred { }` block says, read out of the build script.
  *
  * This is the metadata half of the entrypoint marker. The PSI half can only see
- * that a class implements `SacredMod`, which any number of classes in a project
+ * that a class extends `SacredMod`, which any number of classes in a project
  * may do. The descriptor is the one place that says which of them the loader
  * will actually instantiate. Neither answer alone is the question a reader has.
  *

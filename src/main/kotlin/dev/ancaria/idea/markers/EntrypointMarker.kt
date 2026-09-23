@@ -15,15 +15,16 @@ import javax.swing.Icon
 /**
  * The class the mod starts in.
  *
- * Two sources, and neither is enough alone. The PSI says a class implements
- * `SacredMod`, which several classes in a project may do. The descriptor in the
+ * Two sources, and neither is enough alone. The PSI says a class extends
+ * `SacredMod`, directly or through an abstract base of the mod's own, which
+ * several classes in a project may do. The descriptor in the
  * build script says which one the loader will instantiate, and it names a
  * string that may not be a class at all. So the icon appears on any class the
  * loader could start, and the tooltip says which of the three situations this
  * one is in: the declared entrypoint, a candidate the descriptor does not
  * name, or a mod project whose build script has not been read yet.
  *
- * That middle case is the one worth having. A class that implements `SacredMod`
+ * That middle case is the one worth having. A class that extends `SacredMod`
  * and is not the entrypoint is silently never loaded, and the first symptom is
  * a mod that starts and does nothing.
  */
@@ -36,10 +37,12 @@ class EntrypointMarker : SacredMarker() {
     override fun mark(declaration: UDeclaration, anchor: PsiElement): LineMarkerInfo<*>? {
         val klass = (declaration as? UClass)?.javaPsi ?: return null
         // The loader calls getDeclaredConstructor().newInstance() on it, so an
-        // interface or an abstract base is not a candidate however it is
-        // declared, and the linter refuses one for the same reason.
+        // abstract base is not a candidate however it is declared, and the
+        // linter refuses one for the same reason. Its concrete subclasses are:
+        // the inheritor check below walks the whole superclass chain, and
+        // SacredMod itself is abstract, so it never marks itself.
         if (klass.isInterface || klass.hasModifierProperty(PsiModifier.ABSTRACT)) return null
-        if (!InheritanceUtil.isInheritor(klass, Sacred.MOD_INTERFACE)) return null
+        if (!InheritanceUtil.isInheritor(klass, Sacred.MOD_CLASS)) return null
 
         val declared = ModDescriptor.declaration(anchor)
         val tooltip = when {
