@@ -79,15 +79,15 @@ contain machine-specific absolute paths.
 
 ### Gutter icons
 
-The plugin adds gutter icons beside `SacredMod` implementations and
+The plugin adds gutter icons beside `SacredMod` subclasses and
 `@Subscribe` methods that listen for game events. One UAST-based implementation
 supports Java, Kotlin and Groovy.
 
 Entrypoint detection uses both PSI and the build script. PSI identifies every
-concrete, nonabstract class that implements `SacredMod`, while the `entrypoint`
-value in the build script identifies the class the loader will instantiate.
-Each candidate gets an icon, and its tooltip reports whether it matches the
-configured entrypoint. Clicking it opens the `entrypoint` declaration when the
+concrete, nonabstract class that extends `SacredMod`, directly or through an
+abstract base of the mod's own, while the `entrypoint` value in the build
+script identifies the class the loader will instantiate. Each candidate gets an
+icon, and its tooltip reports whether it matches the configured entrypoint. Clicking it opens the `entrypoint` declaration when the
 plugin can find one.
 
 An event icon appears on a method with `@Subscribe`, exactly one parameter and a

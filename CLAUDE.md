@@ -150,8 +150,10 @@ plugin.
 incorrect anchors, and answering for every declaration token duplicates the
 icon.
 
-`EntrypointMarker` accepts only concrete, nonabstract classes that implement
-`dev.ancaria.coderpack.api.SacredMod`. `ModDescriptor` reads
+`EntrypointMarker` accepts only concrete, nonabstract classes that extend
+the abstract class `dev.ancaria.coderpack.api.SacredMod` (API 3), directly or
+through intermediate abstract classes. There is no Kotlin-specific base class
+to recognise any more. `ModDescriptor` reads
 `entrypoint = "..."` or the older `entrypoint.set("...")` form from the
 module's Gradle build script. The tooltip distinguishes a matching entrypoint,
 another candidate, and a descriptor that could not be read. Clicking navigates
