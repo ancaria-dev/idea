@@ -87,8 +87,8 @@ Entrypoint detection uses both PSI and the build script. PSI identifies every
 concrete, nonabstract class that extends `SacredMod`, directly or through an
 abstract base of the mod's own, while the `entrypoint` value in the build
 script identifies the class the loader will instantiate. Each candidate gets an
-icon, and its tooltip reports whether it matches the configured entrypoint. Clicking it opens the `entrypoint` declaration when the
-plugin can find one.
+icon, and its tooltip reports whether it matches the configured entrypoint.
+Clicking it opens the `entrypoint` declaration when the plugin can find one.
 
 An event icon appears on a method with `@Subscribe`, exactly one parameter and a
 parameter type from the Sacred event hierarchy. Before the first Gradle sync,
