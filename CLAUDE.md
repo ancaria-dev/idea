@@ -1,269 +1,62 @@
-# IDEA plugin
+# idea
 
-## Repository purpose
+Workspace rules and release chain: see `../CLAUDE.md`.
 
-This repository contains the IntelliJ IDEA plugin published on the JetBrains
-Marketplace as **Sacred Mod Development**. It adds a New Project wizard, a Run
-Sacred configuration, two gutter markers, and an application settings page.
-The plugin is written in Kotlin and built with the IntelliJ Platform Gradle
-Plugin.
+## Boundaries
 
-The plugin presents tools owned by other repositories. It must not redefine
-their contracts. The wizard calls the scaffolder from `build`. The run
-configuration calls the project's Gradle wrapper and a released launcher
-executable. The gutter markers inspect the API published by `coderpack`.
+- This is the IntelliJ IDEA plugin "Sacred Mod Development", id `dev.ancaria.idea`. Never change the id; it is the Marketplace identity and a new id has no upgrade path.
+- Never redefine another repository's contract. The wizard calls `build`'s scaffolder, Run Sacred calls the project's Gradle wrapper and a released launcher, markers read the `coderpack` API.
+- Name everything shared with another repository once, in `Sacred.kt`: API types, launcher repository and asset, install task and property, paths, game executables.
+- `dev.ancaria.coderpack:templates` resolves from Maven Central. `mavenLocal()` comes first in `build.gradle.kts`, so `publishToMavenLocal` in `build` overrides it for an unreleased template change.
+- Keep `exclude(group = "org.jetbrains.kotlin")` on the `templates` dependency. A second Kotlin stdlib on the plugin classpath causes `NoClassDefFoundError`.
 
-## Repository layout
+## Wizard
 
-| Path | Contents |
-|---|---|
-| `src/main/kotlin/dev/ancaria/idea/` | `Sacred.kt`, which holds names shared with other repositories, plus `SacredIcons.kt`, `SacredBundle.kt`, and `Notices.kt`. |
-| `.../wizard/` | `SacredProjectWizard`, `SacredModStep`, `Catalog`, `Scaffolding`, and `SacredProjectSetup`. |
-| `.../settings/` | Application-level `SacredSettings` and `SacredState`, the `SacredConfigurable` page, and `GameFolder` validation. State is stored in `sacred.xml`. |
-| `.../launcher/` | `LauncherReleases`, `LauncherCache`, and `LauncherInstall`. |
-| `.../run/` | The Run Sacred configuration type, options, editor, state, command construction, and startup setup. |
-| `.../markers/` | `SacredMarker`, `EntrypointMarker`, `EventMarker`, and `ModDescriptor`. |
-| `src/main/resources/META-INF/plugin.xml` | Marketplace metadata, dependencies, and core extension registrations. The build patches only `<version>` and `<idea-version>`. |
-| `src/main/resources/META-INF/sacred-kotlin.xml` | Kotlin marker registrations and K1/K2 compatibility declaration. Loaded only when the Kotlin plugin is present. |
-| `src/main/resources/META-INF/sacred-groovy.xml` | Groovy marker registrations. Loaded only when the Groovy plugin is present. |
-| `src/main/resources/icons/` | Marker SVGs and `sacred_icon.png`, the game mark used as their drawing reference. |
-| `src/main/resources/messages/SacredBundle.properties` | All user-facing strings. |
-| `gradle.properties` | `pluginVersion`, `platformVersion`, `sinceBuild`, `untilBuild`, and Gradle settings. |
-
-## New Project wizard
-
-`SacredProjectWizard` implements `GeneratorNewProjectWizard` and is registered
-at `com.intellij.newProjectWizard.generator`. The platform's
-`NewProjectWizardBaseStep` supplies the project name and location.
-`SacredModStep` adds the mod fields on the same page through `nextStep`.
-
-The form collects the group, mod name, mod ID, description, template, source
-language, build-script DSL, repository URL, package, author, and mod version.
-It also controls Git initialization and SRML repository generation. The two
-checkboxes default to enabled. The package, author, and version fields are
-under Advanced.
-
-Defaults flow from project name to mod name to mod ID, then from group and mod
-ID to package. Each derived field stops tracking its source after the user
-edits it. This is the default `GraphProperty.dependsOn` behavior.
-
-**Language** selects the mod source language. **Build script** selects
-`build.gradle.kts` or `build.gradle`. These choices are independent. A Java
-mod can use either Gradle DSL, as can a Kotlin or Groovy mod.
-
-`Catalog` reads templates, each template's supported languages, DSLs, and their
-descriptions from `dev.ancaria.coderpack:templates`. Do not maintain parallel
-lists here. Rebuild the language choices when the template changes, and never
-offer a language that the selected template does not support. A template change
-in `build` reaches the wizard when this plugin is rebuilt against that
-scaffolder.
-
-`Scaffolding` creates the same value map used by `coderpack new`, then calls
-`Scaffold.plan` and `Scaffold.write`. Planning finishes before the first file
-is written. The IDE has already created the project directory and `.idea`, so
-the wizard writes with `force = true` and must preserve unrelated files.
-When Git is enabled, `Git.init` initializes the repository and adds the
-resolved project URL as `origin`. It does not create a commit.
-
-`SacredProjectSetup` refreshes the VFS synchronously after writing files. Keep
-Gradle linking out of this class. Linking must happen after the project window
-opens, while `StartupManager.runAfterOpened` is internal API and fails plugin
-verification. `SacredRunSetup` handles linking as a post-startup activity for
-both generated and cloned projects.
+- Never copy templates, languages, or DSLs here. `Catalog` reads them from `templates`. Rebuild language choices when the template changes, and never offer a language the template lacks.
+- `Scaffolding` builds the same value map as `coderpack new`, then calls `Scaffold.plan` and `Scaffold.write`. It writes with `force = true` because the IDE already created the directory; preserve unrelated files.
+- `Git.init` adds `origin` and never commits.
+- Keep Gradle linking out of `SacredProjectSetup`, which only refreshes the VFS. `StartupManager.runAfterOpened` is internal API and fails verification, so `SacredRunSetup` links as a post-startup activity.
 
 ## Settings
 
-**Settings | Tools | Sacred Mod Development** stores the Sacred Gold folder
-and launcher release at application level. Do not move either value into
-project state. Several mod projects on one machine share one game installation
-and one launcher selection.
-
-The game folder is valid when it contains `pureHD.exe`, `Sacred.exe`, or
-`Game.exe`, matched without case sensitivity and checked in that order. The
-address table belongs to `pureHD.exe`, so that executable keeps priority.
-
-Launcher releases come from
-`https://api.github.com/repos/ancaria-dev/launcher/releases?per_page=50`.
-The request is unauthenticated because the repository is public. Results are
-cached for the IDE session. Drafts, prereleases, and releases without the
-`Sacred Mod Loader.exe` asset are excluded.
-
-The release selector starts with cached versions, then adds the GitHub response
-on a pooled thread. Refresh forces another request. An empty version means the
-latest stable release and appears as `Latest (<version>)` after a successful
-lookup. If the lookup fails, latest falls back to the newest cached version.
-There is no third selection state.
-
-Applying settings calls `LauncherInstall.provide` under modal progress. Cached
-executables are stored at
-`<Gradle user home>/caches/ancaria/launcher/<version>/Sacred Mod Loader.exe`.
-Downloads use a sibling `.part` file followed by an atomic move. The plugin
-does not delete old releases.
+- The game folder and launcher release are application-level settings (`sacred.xml`). Never move them into project state or a run configuration; run configurations get committed and shared.
+- A game folder is valid with `pureHD.exe`, `Sacred.exe`, or `Game.exe`, case-insensitive, in that order.
+- Releases come unauthenticated from `https://api.github.com/repos/ancaria-dev/launcher/releases?per_page=50`, cached per IDE session. Exclude drafts, prereleases, and releases without `Sacred Mod Loader.exe`.
+- An empty version means latest stable. If the lookup fails, latest falls back to the newest cached version. There is no third state.
+- `LauncherInstall.provide` caches at `<Gradle user home>/caches/ancaria/launcher/<version>/Sacred Mod Loader.exe`, via a `.part` file and an atomic move. It never deletes old releases.
 
 ## Run Sacred
 
-`SacredRunConfiguration` stores only `installMod` and `showConsole`. Machine
-paths and launcher versions belong in application settings because run
-configurations can be committed and shared. If the game folder is missing or
-invalid, configuration validation offers a direct settings-page fix. Pressing
-Run also opens that page when needed.
-
-Run provisioning follows this order:
-
-1. Resolve and download the selected launcher release if it is absent.
-2. Compare the cached and installed launcher executables by SHA-256.
-3. Replace `<game>/Sacred Mod Loader.exe` when the bytes differ.
-4. Build and install the mod when `installMod` is enabled and a Gradle wrapper exists.
-5. Start the launcher.
-
-The build command is:
-
-```
-gradlew installSacredMod -PsacredDir=<game> --console=plain
-```
-
-On Windows the wrapper is `gradlew.bat`. On other systems it is `gradlew`.
-The task name stays unqualified so root projects and multi-mod SRML layouts
-install all applicable mods.
-
-When a build command exists, the Run console follows Gradle. A zero exit code
-starts the launcher as a detached process. A failed build does not start it.
-If mod installation is disabled, or if the project has no wrapper, there is no
-build command. The console then follows the launcher process, and Stop can end
-it. `showConsole` adds `--debug` to the launcher command.
-
-`SacredRunSetup` runs for a project whose root or immediate child build script
-contains `dev.ancaria.coderpack`. It links the root Gradle build only when no
-Gradle project is already linked. It creates a Run Sacred configuration only
-when none exists and selects it only when no other run configuration is
-selected.
+- `SacredRunConfiguration` stores only `installMod` and `showConsole`.
+- On Run: fetch the selected launcher if missing; replace `<game>/Sacred Mod Loader.exe` when its SHA-256 differs; if `installMod` and a wrapper exist, run `gradlew installSacredMod -PsacredDir=<game> --console=plain`; start the launcher only if the build succeeded.
+- Keep the task name unqualified so multi-mod layouts install every mod.
+- With a build, the console follows Gradle and the launcher starts detached. Without one, the console follows the launcher and Stop ends it. `showConsole` adds `--debug`.
+- `SacredRunSetup` acts only when the root or an immediate child build script contains `dev.ancaria.coderpack`. It links only when no Gradle project is linked, creates a configuration only when none exists, and selects it only when nothing else is selected.
 
 ## Gutter markers
 
-The Java, Kotlin, and Groovy registrations use the same UAST-based marker
-classes. Keep Kotlin and Groovy registrations in optional descriptors. A hard
-language-plugin dependency would prevent installation in an IDE without that
-plugin.
+- Keep Kotlin and Groovy registrations in the optional descriptors `sacred-kotlin.xml` and `sacred-groovy.xml`. A hard language-plugin dependency blocks installation without that plugin.
+- Register markers on leaves: convert the parent to a `UDeclaration` and answer only when the leaf is its `uastAnchor`. Otherwise IntelliJ logs bad anchors or the icon duplicates.
+- `EntrypointMarker` accepts concrete classes extending the abstract `dev.ancaria.coderpack.api.SacredMod`, directly or through abstract classes. `ModDescriptor` reads `entrypoint = "..."` or `entrypoint.set("...")` from the build script.
+- `EventMarker` needs `@Subscribe`, one parameter, and an event type. Its pre-sync package fallback follows the linter's definition of an event: see `../build/CLAUDE.md`.
+- Markers ignore the return type. Checking the returned `Mutation` is the linter's job.
 
-`SacredMarker` must receive a leaf element, convert its parent to a
-`UDeclaration`, and answer only when that leaf is `uastAnchor`. IntelliJ logs
-incorrect anchors, and answering for every declaration token duplicates the
-icon.
+## Build
 
-`EntrypointMarker` accepts only concrete, nonabstract classes that extend
-the abstract class `dev.ancaria.coderpack.api.SacredMod` (API 3), directly or
-through intermediate abstract classes. There is no Kotlin-specific base class
-to recognise any more. `ModDescriptor` reads
-`entrypoint = "..."` or the older `entrypoint.set("...")` form from the
-module's Gradle build script. The tooltip distinguishes a matching entrypoint,
-another candidate, and a descriptor that could not be read. Clicking navigates
-to the descriptor when available.
+- `./gradlew build`, `runIde`, `verifyPlugin`, `buildPlugin`.
+- Unlike the other repositories, this build uses a toolchain: the Foojay resolver downloads Temurin 21 if missing.
+- The first build downloads an IntelliJ IDEA distribution of about 1 GB. `verifyPlugin` may download one per checked IDE.
+- Tests are JUnit 5 and start no IDE. The end-to-end test of generated projects lives in `build`.
+- Keep JUnit 4 on the test runtime. IDE services reference it; without it the executor fails with `org/junit/runners/model/Statement`.
+- Keep `buildSearchableOptions = false`; enabling it starts a headless IDE.
+- Keep `languageVersion` and `apiVersion` at the Kotlin version of the oldest supported IDE. Keep `kotlin.stdlib.default.dependency=false`.
+- Keep the deprecated `linkAndRefreshGradleProject` until the oldest supported IDE has its suspend replacement.
+- `verifyPlugin` may report `<supportsKotlinPluginMode>` missing. Keep the K1/K2 declaration in `sacred-kotlin.xml`; in the main descriptor it would reference an unknown extension point without the Kotlin plugin.
+- The plugin icon is four PNGs in `META-INF/` (`pluginIcon.png`, `pluginIcon@2x.png`, and `_dark` copies). No SVG. Replace all four together.
 
-`EventMarker` requires `@Subscribe`, exactly one parameter, and an event type.
-It checks inheritance from `dev.ancaria.coderpack.api.event.Event`, with the
-event package as a pre-sync fallback. That fallback excludes `EventMutation`,
-`Decides`, `Fold` and `Delivery`, which live in the package without being
-events, and every nested type, which is a `Mutation` or the shape the numeric
-ones share. The linter in `build` draws the same line. The tooltip includes a
-nondefault priority. Clicking navigates to the event class.
+## Release
 
-The marker says nothing about the return type. `void` observes and a returned
-`Mutation` decides, and the check that a listener returns the right one is the
-linter's, at build time, where it can name the event and the type it wanted.
-
-## Build and test
-
-A JDK must be available to start Gradle. Compilation targets Java 21. The
-Foojay toolchain resolver downloads Temurin 21 when that toolchain is missing.
-
-```
-./gradlew build          # compile, test, and build the plugin ZIP
-./gradlew runIde         # start a sandbox IDE with the plugin
-./gradlew verifyPlugin   # run Marketplace compatibility verification
-./gradlew buildPlugin    # write build/distributions/sacred-idea-<version>.zip
-```
-
-The first build downloads an IntelliJ IDEA distribution of about one gigabyte
-into the Gradle cache. `verifyPlugin` may download another distribution for
-each IDE it checks.
-
-The tests use JUnit 5 and do not start an IDE. `CatalogTest` compares wizard
-choices with the scaffolder. `GameFolderTest` covers executable lookup and
-paths. `ScaffoldingTest` writes projects to a temporary directory and checks
-the wizard-to-scaffolder boundary. The `build` repository owns the end-to-end
-test that compiles projects generated from the same templates.
-
-## Relationship to `build`
-
-This repository resolves `dev.ancaria.coderpack:templates`, which is published
-by `build`, from Maven Central like any other dependency. Run
-`publishToMavenLocal` in a `build` checkout to test an unreleased template
-change; `mavenLocal()` is checked first in `build.gradle.kts`'s
-`repositories {}` block and overrides the released artifact when present.
-
-Everything else shared with another repository is named once in `Sacred.kt`.
-That includes API types, the launcher repository and asset, the installation
-task and property, mod and launcher paths, and accepted game executables.
-
-## Release process
-
-`pluginVersion` in `gradle.properties` is the release gate. On `master`, CI
-builds and verifies the plugin, then checks for `v<pluginVersion>`. A missing
-tag causes the same ZIP to be published to the JetBrains Marketplace and a
-GitHub release. An existing tag prevents both publication steps.
-`tools/version.ps1` prints `pluginVersion` with no argument, or raises it with
-`pwsh tools/version.ps1 0.99.1`. It leaves `CHANGELOG.md` and the
-`gradle/libs.versions.toml` `coderpack` entry alone on purpose: the former
-needs a new heading, not a renamed one, and the latter tracks `build`'s
-version, not this plugin's own.
-
-Publishing requires one secret, `PUBLISH_TOKEN`.
-
-The `signing` block reads `CERTIFICATE_CHAIN`, `PRIVATE_KEY` and
-`PRIVATE_KEY_PASSWORD`, and those are deliberately never set. The Marketplace
-signs uploads itself, so the plugin needs no certificate of its own, and the
-task is simply skipped when they are absent. Setting them is a one-way door:
-once an account has uploaded a self-signed plugin, every later upload from it
-has to be signed too. Leave them unset unless somebody decides otherwise on
-purpose.
-
-## Rules for coding agents
-
-- Do not copy templates, languages, or build DSL definitions into this
-  repository. `Catalog` must read them from the scaffolder.
-- Do not store the game folder or launcher version in a run configuration.
-- Do not add hard Kotlin or Groovy plugin dependencies for markers. Keep their
-  registrations in optional descriptors.
-- Register line markers on leaves and return a marker only for `uastAnchor`.
-- Keep `languageVersion` and `apiVersion` at the Kotlin version bundled with
-  the oldest supported IDE, regardless of the compiler used by this build.
-- Keep `kotlin.stdlib.default.dependency=false`.
-- Keep `exclude(group = "org.jetbrains.kotlin")` on the `templates`
-  dependency. A second Kotlin standard library on the plugin classpath can
-  cause `NoClassDefFoundError`.
-- Do not change the plugin ID `dev.ancaria.idea`. The ID is its Marketplace
-  identity. Changing it creates a separate plugin with no upgrade path for
-  current users.
-- Raise `pluginVersion` only when the change should publish a Marketplace
-  update and GitHub release. No other change triggers a release.
-
-## Warnings
-
-- Keep `buildSearchableOptions = false`. Enabling it starts a headless IDE for
-  settings indexing and makes the build much slower.
-- `linkAndRefreshGradleProject` is deprecated, but its suspend replacement is
-  unavailable in the oldest supported IDE. Keep the deprecated call until the
-  minimum supported build provides the replacement.
-- `verifyPlugin` fails on internal API use and warns on deprecated API use.
-  This is why Gradle linking lives in the startup activity.
-- The verifier may report `<supportsKotlinPluginMode>` missing because it does
-  not inspect the optional descriptor where the declaration must live. Keep
-  the K1 and K2 declaration in `sacred-kotlin.xml`. Moving it into the main
-  descriptor would reference an unknown Kotlin extension point when the Kotlin
-  plugin is absent. This plugin does not call the Kotlin Analysis API.
-- Keep JUnit 4 on the test runtime even though all repository tests use JUnit
-  5. Services from the IDE distribution reference JUnit 4. Without it, the
-  executor fails with `org/junit/runners/model/Statement`.
-- The plugin icon is the Sacred raster icon in `META-INF/`: `pluginIcon.png`
-  at 40×40, `pluginIcon@2x.png` at 80×80, and `_dark` copies of both. There
-  is no SVG. Replace all four together.
+- Raise `pluginVersion` only to publish. A missing `v<pluginVersion>` tag publishes the same ZIP to the Marketplace and a GitHub release.
+- `tools/version.ps1` leaves `CHANGELOG.md` (needs a new heading) and the `coderpack` entry in `gradle/libs.versions.toml` (tracks `build`) alone.
+- Publishing needs one secret, `PUBLISH_TOKEN`.
+- Never set `CERTIFICATE_CHAIN`, `PRIVATE_KEY`, or `PRIVATE_KEY_PASSWORD` unless I decide so. The Marketplace signs uploads, and once an account uploads a self-signed plugin every later upload must be signed.
