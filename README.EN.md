@@ -7,7 +7,7 @@
 [![License](https://img.shields.io/badge/License-MIT-4B5563?style=for-the-badge)](LICENSE)
 [![Sacred](https://img.shields.io/badge/Sacred-Community-8B1A1A?style=for-the-badge&labelColor=1C1410)](https://ancaria.dev)
 
-[Русский](README.md)
+[Русский](README.md) · [Deutsch](README.DE.md)
 
 </div>
 
