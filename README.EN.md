@@ -13,155 +13,141 @@
 
 # Sacred Mod Development
 
-This IntelliJ IDEA plugin is published on the JetBrains Marketplace as
-[**Sacred Mod Development**](https://plugins.jetbrains.com/plugin/34165-sacred-mod-development). It adds a New Project wizard, a run configuration, two gutter
-icons and one settings page for Sacred Gold mod development.
+An IntelliJ IDEA plugin that lets you create and run a Sacred Gold mod without
+leaving the IDE.
 
-The plugin doesn’t define the mod format. Its wizard uses the same scaffolder as
-`coderpack new`. The run configuration calls the project’s Gradle wrapper and a
-released Sacred Mod Loader executable. The gutter icons read the API published
-by `coderpack`. Templates live in the `build` repository, with no duplicate copy
-here to drift out of sync.
+A wizard creates a ready-to-build Gradle project for your mod. The Run Sacred
+button builds the mod, installs it in the game, and starts the launcher.
+Gutter icons mark your mod's entry point and its event listeners.
 
-## What it does
+The plugin keeps no templates of its own. The wizard reads them from the same
+scaffolder as `coderpack new`, so both give you the same project.
 
-### File | New | Project | Sacred Mod
+## Getting started
 
-The wizard asks for a group, mod name, derived mod ID, description, template,
-mod language and build script DSL. **Create a Git repository** initializes a
-repository, adds the project URL as `origin` and leaves the history without an
-initial commit. **Create an SRML mod repository** adds `registry.toml` and a
-workflow that publishes each new version for launcher installation. Both
-checkboxes are selected by default. Enter the project’s address in
-**Repository URL**. Author, package and mod version are under **Advanced**.
+1. Install the plugin: open **Settings | Plugins | Marketplace** and search for
+   **Sacred Mod Development**, or open its
+   [Marketplace page](https://plugins.jetbrains.com/plugin/34165-sacred-mod-development).
+2. Create a project: **File | New | Project | Sacred Mod**.
+3. Set the game folder: **Settings | Tools | Sacred Mod Development**.
+4. Press **Run Sacred**.
 
-Language and build script are separate choices:
+The plugin supports IntelliJ IDEA 2025.2 and 2025.3, Community and Ultimate.
+To install it from a file, download `sacred-idea-<version>.zip` from the
+releases and use **Settings | Plugins | ⚙ | Install Plugin from Disk**.
 
-- **Language** selects Java, Kotlin or Groovy for the mod source. Kotlin and
-  Groovy add their runtime libraries to the JAR. Java needs no separate
-  runtime.
-- **Build script** selects Kotlin DSL or Groovy DSL for the Gradle build,
-  producing `build.gradle.kts` or `build.gradle`. The source language does not
-  constrain this choice.
+## Features
 
-The scaffolder supplies the template, language and build DSL lists. Rebuilding
-the plugin after a template change in `build` updates the wizard without
-changing its source. Each template shows only the languages it supports.
+### New Project wizard
 
-The wizard passes the same values to the scaffolder as `coderpack new`, so both
-routes produce the same project layout. Generated projects build and pass the
-scaffolder’s checks without manual fixes.
+The wizard asks for a group, mod name, description, template, mod language,
+and build script language. It derives the mod ID from the name. Author,
+package, and version sit under **Advanced**.
+
+The mod language and the build language are separate choices:
+
+- **Language** is the mod's language: Java, Kotlin, or Groovy. Kotlin and
+  Groovy pack their runtime into the mod jar. Java needs none.
+- **Build script** is `build.gradle.kts` or `build.gradle`.
+
+Two checkboxes are on by default. **Create a Git repository** creates a
+repository and adds the **Repository URL** as `origin`, without committing
+anything. **Create an SRML mod repository** adds `registry.toml` and a
+workflow that releases each new version of the mod. Players can then install
+it from the launcher.
+
+Templates and languages come from the scaffolder in `build`. A new template
+shows up in the wizard once the plugin is rebuilt, and each template offers
+only the languages it supports.
 
 ### Run Sacred
 
-The plugin adds **Run Sacred** when it finds `dev.ancaria.coderpack` in the root
-build script or one immediate child. It does not create a duplicate
-configuration. If no Gradle project is linked yet, it links the root project.
+The plugin adds a **Run Sacred** configuration on its own when it finds
+`dev.ancaria.coderpack` in the root build script or one folder below. If the
+project isn't linked to Gradle yet, the plugin links it.
 
-By default, Run Sacred executes
-`gradlew installSacredMod -PsacredDir=<game folder> --console=plain`, installs
-the selected Sacred Mod Loader release in the game folder and starts it.
-Windows uses `gradlew.bat`. If the selected release is missing from the local
-cache, the plugin downloads it first. Before copying the executable, it
-compares the installed and cached files by SHA-256.
+When you press it, Run Sacred:
 
-If the game folder is not configured, Run opens the plugin’s settings page.
+1. Builds the mod and installs it in the game with
+   `gradlew installSacredMod -PsacredDir=<game folder> --console=plain`.
+2. Downloads the selected Sacred Mod Loader release if it isn't cached.
+3. Copies the launcher into the game folder if its SHA-256 differs from the
+   cached one.
+4. Starts the launcher.
 
-With **Build and install the mod first** selected, the Run console follows
-Gradle and shows its output. Sacred Mod Loader starts as a detached process
-after a successful build, so Stop does not end the game. If the checkbox is
-cleared or the project has no Gradle wrapper, the console follows the loader
-process and Stop ends it. **Show the loader console** adds `--debug`.
+If no game folder is set, Run Sacred opens the settings page.
 
-The run configuration stores only its two checkboxes. The game folder and loader
-release are application-level settings, so shared run configurations do not
-contain machine-specific absolute paths.
+The configuration has two checkboxes. **Build and install the mod first**
+turns the build on: the console shows Gradle output, and the launcher starts
+on its own, so Stop doesn't close the game. Without the build, or without a
+Gradle wrapper, the console follows the launcher, and Stop ends it. **Show the
+loader console** adds `--debug`.
+
+The game folder and launcher version live in the IDE settings, not in the
+configuration. A shared configuration file therefore holds no paths from your
+machine.
 
 ### Gutter icons
 
-The plugin adds gutter icons beside `SacredMod` subclasses and
-`@Subscribe` methods that listen for game events. One UAST-based implementation
-supports Java, Kotlin and Groovy.
+An entry point icon appears on every non-abstract class that extends
+`SacredMod`, directly or through an abstract class of your own. Its tooltip
+says whether the class matches the `entrypoint` in the build script. Clicking
+it opens that declaration.
 
-Entrypoint detection uses both PSI and the build script. PSI identifies every
-concrete, nonabstract class that extends `SacredMod`, directly or through an
-abstract base of the mod's own, while the `entrypoint` value in the build
-script identifies the class the loader will instantiate. Each candidate gets an
-icon, and its tooltip reports whether it matches the configured entrypoint.
-Clicking it opens the `entrypoint` declaration when the plugin can find one.
+An event icon appears on a method with `@Subscribe` and a single event
+parameter. The tooltip names the event and any non-default priority. A
+`MONITOR` listener gets a grey icon. Clicking it opens the event class. The
+icon doesn't check the return type: the linter does that at build time.
 
-An event icon appears on a method with `@Subscribe`, exactly one parameter and a
-parameter type from the Sacred event hierarchy. Before the first Gradle sync,
-top-level classes in the event package are also recognized, except for
-`EventMutation`, `Decides`, `Fold` and `Delivery`. The tooltip names the event
-and any nondefault listener priority, and a `MONITOR` listener gets a grey
-icon. Clicking the icon opens the event class. The icon does not check the
-return type: `void` observes and the event's `Mutation` decides, and the
-linter checks that at build time.
+The icons work in Java, Kotlin, and Groovy.
 
-### Settings | Tools | Sacred Mod Development
+### Settings
 
-This application-level settings page stores the Sacred Gold folder and Sacred
-Mod Loader release. The selected folder must contain `pureHD.exe`, `Sacred.exe`
-or `Game.exe`.
+**Settings | Tools | Sacred Mod Development** stores the Sacred Gold folder
+and the Sacred Mod Loader release. The folder must contain `pureHD.exe`,
+`Sacred.exe`, or `Game.exe`.
 
-The plugin reads stable releases from GitHub. It excludes drafts, prereleases
-and entries without a `Sacred Mod Loader.exe` asset. Cached versions remain
-available while the request runs, and **Refresh** requests the list again. An
-empty value means the latest release. Once GitHub returns the list, it appears
-as `Latest (<version>)`. If GitHub is unavailable, the plugin uses the newest
-cached version. The selection is stored for the whole IDE. Apply downloads the
-release when it is not cached yet.
+The plugin reads the release list from GitHub and shows only stable releases
+that carry `Sacred Mod Loader.exe`. Cached versions stay available while the
+list loads. **Refresh** asks for it again. An empty value means the latest
+release and shows as `Latest (<version>)` once the list arrives. Without
+GitHub, the plugin uses the newest cached version. **Apply** downloads the
+selected release.
 
-Downloads are stored at
+Launchers are stored in
 `<gradle user home>/caches/ancaria/launcher/<version>/Sacred Mod Loader.exe`.
-The plugin does not delete older versions automatically.
+The plugin doesn't delete old versions.
 
-## Install
+## Building
 
-From the Marketplace, open **Settings | Plugins | Marketplace** and search for
-“Sacred Mod Development”, or open its [Marketplace page](https://plugins.jetbrains.com/plugin/34165-sacred-mod-development).
-
-To install from a file, download `sacred-idea-<version>.zip` from this
-repository’s releases or use the local
-`build/distributions/sacred-idea-<version>.zip`, then open
-**Settings | Plugins | ⚙ | Install Plugin from Disk**.
-
-The plugin supports IntelliJ IDEA 2025.2–2025.3, Community or Ultimate.
-
-## Build
-
-You need a JDK on `PATH`. The Gradle toolchain resolver downloads Temurin 21 if
-JDK 21 is unavailable, because the plugin targets the JVM used by the supported
-IDE versions.
+Gradle needs a JDK on `PATH`. The plugin targets Java 21, and Gradle downloads
+Temurin 21 if it's missing.
 
 ```
-./gradlew build          # compile, test, build the zip
-./gradlew runIde         # a sandbox IDE with the plugin in it
-./gradlew verifyPlugin   # what the marketplace runs on upload
+./gradlew build          # compile, test, and build the zip
+./gradlew runIde         # a sandbox IDE with the plugin
+./gradlew verifyPlugin   # the same check the Marketplace runs
 ```
 
-The first build downloads an IntelliJ IDEA distribution of about one gigabyte
-to the Gradle cache.
+The first build downloads an IDE distribution of about one gigabyte into the
+Gradle cache.
 
-If the `build` repository is checked out beside `idea`, Gradle includes
-`../build/gradle` as a composite build. Template changes then appear in the
-wizard without an intermediate publication. Otherwise,
-`dev.ancaria.coderpack:templates` resolves from Maven Local or Maven Central. CI
-publishes the scaffolder to Maven Local and tests that repository-based path.
+The templates come from Maven Central as `dev.ancaria.coderpack:templates`. To
+try an unreleased template, run `publishToMavenLocal` in the `build`
+repository: Maven Local comes first.
 
-## Release
+## Releases
 
-CI uses `pluginVersion` in `gradle.properties` as the release gate. On `master`,
-a missing `v<version>` tag causes the plugin to be uploaded to the JetBrains
-Marketplace and published as a GitHub release with the same ZIP. If the tag
-already exists, CI builds and verifies the plugin without publishing it again.
+The plugin version is `pluginVersion` in `gradle.properties`. When `master`
+has a version with no `v<version>` tag yet, CI publishes the plugin to the
+JetBrains Marketplace and creates a GitHub release with the same zip. If the
+tag exists, CI only builds and verifies the plugin.
 
-Publishing needs one secret, `PUBLISH_TOKEN`. The plugin is not signed with a
-certificate of its own: the Marketplace signs it, and self-signing is a door
-that does not open the other way.
+Publishing needs one secret, `PUBLISH_TOKEN`. The plugin isn't signed with a
+certificate of its own: the Marketplace signs it. Once you start self-signing,
+there's no going back.
 
 ## License
 
-MIT. See [LICENSE](LICENSE). The plugin does not redistribute game files and
-requires your own copy of Sacred Gold.
+MIT, see [LICENSE](LICENSE). The plugin contains no game files. You need your
+own copy of Sacred Gold.
