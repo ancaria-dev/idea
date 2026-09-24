@@ -13,8 +13,9 @@
     <description><![CDATA[
         <p>Create and run <b>Sacred Gold</b> mods from the IDE.</p>
 
-        <p>The loader starts a JVM alongside the game and sends game events to
-        your mod. This plugin provides the project setup and development tools.</p>
+        <p>The loader runs your mod next to the game and hands it game events.
+        This plugin sets up the project, builds the mod, and starts the game
+        with it.</p>
 
         <h3>What it does</h3>
         <ul>
