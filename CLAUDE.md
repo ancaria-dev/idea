@@ -264,5 +264,6 @@ purpose.
 - Keep JUnit 4 on the test runtime even though all repository tests use JUnit
   5. Services from the IDE distribution reference JUnit 4. Without it, the
   executor fails with `org/junit/runners/model/Statement`.
-- The Marketplace plugin icon is `META-INF/pluginIcon.svg`. It does not accept
-  a PNG at that path. `icons/sacred_icon.png` is only a drawing reference.
+- The plugin icon is the Sacred raster icon in `META-INF/`: `pluginIcon.png`
+  at 40×40, `pluginIcon@2x.png` at 80×80, and `_dark` copies of both. There
+  is no SVG. Replace all four together.
